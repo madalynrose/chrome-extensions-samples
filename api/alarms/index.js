@@ -11,6 +11,7 @@ const clearButton = document.getElementById('clear-display');
 const refreshButton = document.getElementById('refresh-display');
 const pad = (val, len = 2) => val.toString().padStart(len, '0');
 
+
 // DOM event bindings
 
 //// Alarm display buttons
@@ -72,16 +73,19 @@ class AlarmManager {
 
     let logLine = document.createElement('div');
     let logText = `[${time}] ${message}`;
-    let currentLog = chrome.storage.session.get(['logText'], (sessionStorage) => {
-      console.log(sessionStorage.logText)
-      return sessionStorage.logText;
-    });
-    let newLog = currentLog ? currentLog.unshift(logText) : [logText];
-    chrome.storage.session.set({logText: newLog});
-    logLine.textContent = logText;
+    chrome.storage.session.get(['logText'], (sessionStorage) => {
+      let currentLog = sessionStorage.logText;
+      if(currentLog?.length){
+        currentLog.unshift(logText)
+      } else {
+        currentLog = [logText]
+      }
+      chrome.storage.session.set({logText: currentLog});
+      logLine.textContent = logText;
 
-    // Log events in reverse chronological order
-    this.logElement.insertBefore(logLine, this.logElement.firstChild);
+      // Log events in reverse chronological order
+      this.logElement.insertBefore(logLine, this.logElement.firstChild);
+    });
   }
 
   handleAlarm = async (alarm) => {
@@ -187,6 +191,8 @@ class AlarmManager {
     this.displayElement.textContent = '';
   }
 }
+
+
 
 let manager = new AlarmManager(display, log);
 manager.refreshDisplay();
