@@ -71,7 +71,14 @@ class AlarmManager {
     let time = `${h}:${m}:${s}.${ms}`;
 
     let logLine = document.createElement('div');
-    logLine.textContent = `[${time}] ${message}`;
+    let logText = `[${time}] ${message}`;
+    let currentLog = chrome.storage.session.get(['logText'], (sessionStorage) => {
+      console.log(sessionStorage.logText)
+      return sessionStorage.logText;
+    });
+    let newLog = currentLog ? currentLog.unshift(logText) : [logText];
+    chrome.storage.session.set({logText: newLog});
+    logLine.textContent = logText;
 
     // Log events in reverse chronological order
     this.logElement.insertBefore(logLine, this.logElement.firstChild);

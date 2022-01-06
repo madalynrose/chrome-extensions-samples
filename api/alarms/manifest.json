@@ -6,7 +6,8 @@
     "service_worker": "bg-wrapper.js"
   },
   "permissions": [
-    "alarms"
+    "alarms",
+    "storage"
   ],
   "action": {}
 }
